@@ -6,6 +6,8 @@ def get_currency_and_rate(prompt, currency_from=""):
   data={"result": "error"}
   while data["result"] =="error":
     currency=input(prompt).upper()
+
+    # Use API key from ExchangeRate-API.com
     request_url = "https://v6.exchangerate-api.com/v6/YOUR-API-HERE/latest/" + currency
 
     # Get data from the web API
