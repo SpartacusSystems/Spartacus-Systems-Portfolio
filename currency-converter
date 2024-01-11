@@ -1,14 +1,15 @@
 import requests
 import os
 
+# Don't share API key, Get API key from ExchangeRate-API.com
+my_secret = [YOUR-API-KEY-HERE]
+
+# Get currency and rate. If currency_from is provided, return the exchange rate
 def get_currency_and_rate(prompt, currency_from=""):
-  # Get currency to convert from with error checking.
   data={"result": "error"}
   while data["result"] =="error":
     currency=input(prompt).upper()
-
-    # Use API key from ExchangeRate-API.com
-    request_url = "https://v6.exchangerate-api.com/v6/YOUR-API-HERE/latest/" + currency
+    request_url = "https://v6.exchangerate-api.com/v6/" + my_secret + "/latest/" + currency
 
     # Get data from the web API
     response = requests.get(request_url)
@@ -16,13 +17,16 @@ def get_currency_and_rate(prompt, currency_from=""):
     data = response.json()
     
     if data["result"]=="error":
-      print(data["error-type"])
-      print("Please enter a valid currency...")
+      print("")
+      print("===> Error detected: ", data["error-type"])
+      print("===> Please enter a valid currency...")
+      print("")
     else:
       if currency_from =="":
         rate=data["conversion_rates"][currency]
       else:
         rate=1/data["conversion_rates"][currency_from]
+      #return tuple of currency and exchange rate
       return currency, rate
 
 def proceed():
@@ -30,7 +34,7 @@ def proceed():
   # Get currency to convert from
   currency_from, rate = get_currency_and_rate("Enter currency to convert from: ")
   
-  # Get currency to convert to
+  # Get currency to convert to and the exchange rate
   currency_to, rate = get_currency_and_rate("Enter currency to convert to: ", currency_from)
   
   # Get amount to convert with error checking.
@@ -38,7 +42,10 @@ def proceed():
   while amt <= 0:
     amt = float(input("Enter " + currency_from + " amount to convert: "))
     if amt<=0:
-      print("Please enter a positive number...")
+      print("")
+      print("===> Error detected: amount is not greater than zero.")
+      print("===> Please enter a positive number...")
+      print("")
   
   conversion_result=amt*rate
   
